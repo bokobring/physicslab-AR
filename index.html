@@ -134,31 +134,31 @@
             cursor: pointer;
         }
 
-        /* 负一层样式 */
+        /* 全屏负一层样式 */
         .negative-layer {
-            position: fixed;
-            top: 100vh;
-            left: 0;
-            width: 100%;
-            height: 100vh;
+            position: fixed; /* 全屏固定定位 */
+            top: 0; /* 顶部对齐屏幕顶部 */
+            left: 0; /* 左侧对齐屏幕左侧 */
+            width: 100vw; /* 宽度为视口宽度 */
+            height: 100vh; /* 高度为视口高度 */
             background-color: #fff;
-            overflow-y: auto;
+            overflow-y: auto; /* 允许负一层内部滚动 */
             padding: 20px;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: none; /* 移除阴影，因为现在是全屏 */
             z-index: 10;
             transition: transform 0.5s cubic-bezier(0.2, 0.6, 0.3, 1);
-            transform: translateY(0);
+            transform: translateY(100vh); /* 初始隐藏在屏幕下方 */
             /* 相对定位，为关闭按钮定位 */
             position: relative;
         }
 
         .negative-layer.active {
-            transform: translateY(-100vh);
+            transform: translateY(0); /* 全屏显示时，位移为 0 */
         }
 
-        /* 关闭按钮样式 */
+        /* 关闭按钮样式 (与之前相同) */
         .negative-layer-close-button {
-            position: absolute; /* 绝对定位到负层右上角 */
+            position: absolute;
             top: 10px;
             right: 10px;
             background: none;
@@ -311,12 +311,12 @@
             const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
             const tutorialListContainer = document.getElementById('tutorial-list-container');
             const oneClickDownloadSection = document.getElementById('one-click-download-section');
-            const negativeLayerCloseBtn = document.getElementById('negative-layer-close-btn'); // 获取关闭按钮
+            const negativeLayerCloseBtn = document.getElementById('negative-layer-close-btn');
 
             let negativeLayerActive = false;
 
             // 加载链接 JSON 文件
-            fetch('/link.json') // 使用绝对路径
+            fetch('/link.json') // 绝对路径
                 .then(response => response.json())
                 .then(data => {
                     iosDownloadLink.href = data.ios || '#';
@@ -353,7 +353,7 @@
                 .catch(error => console.error('Error loading link.json:', error));
 
             // 加载介绍文本文件
-            fetch('/introduction.txt') // 使用绝对路径
+            fetch('/introduction.txt') // 绝对路径
                 .then(response => response.text())
                 .then(text => {
                     introductionContentDiv.textContent = text;
@@ -392,7 +392,7 @@
 
 
             // 加载教程分类和列表 (修复后的错误处理和中文路径处理)
-            fetch('/article/') // 使用绝对路径
+            fetch('/article/') // 绝对路径
                 .then(response => {
                     if (!response.ok) {
                         console.error('HTTP error loading article directory:', response.status, response.statusText);
@@ -405,8 +405,8 @@
 
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    const categoryFolders = Array.from(doc.querySelectorAll('a[href^="/article/"]')) // 使用绝对路径选择器
-                        .map(link => link.getAttribute('href').replace('/article/', '').replace(/\/$/, '')) // 使用绝对路径替换
+                    const categoryFolders = Array.from(doc.querySelectorAll('a[href^="/article/"]')) // 绝对路径选择器
+                        .map(link => link.getAttribute('href').replace('/article/', '').replace(/\/$/, '')) // 绝对路径替换
                         .filter(folder => folder && folder !== '..' && folder !== '.');
 
                     console.log('Category Folders:', categoryFolders);
@@ -447,7 +447,7 @@
 
             function loadTutorialsForCategory(categoryName, categoryTutorialsDiv) {
                 const encodedCategoryName = encodeURIComponent(categoryName);
-                fetch(`/article/${encodedCategoryName}/`) // 使用绝对路径
+                fetch(`/article/${encodedCategoryName}/`) // 绝对路径
                     .then(response => {
                         if (!response.ok) {
                             console.error('HTTP error loading tutorials for category:', categoryName, response.status, response.statusText);
@@ -471,7 +471,7 @@
                             tutorialItem.style.animationName = 'fadeInSlideUp';
 
                             const tutorialTitleLink = document.createElement('a');
-                            tutorialTitleLink.href = `/article/${encodedCategoryName}/${filename}`; // 使用绝对路径
+                            tutorialTitleLink.href = `/article/${encodedCategoryName}/${filename}`; // 绝对路径
                             tutorialTitleLink.target = '_blank';
                             tutorialTitleLink.classList.add('tutorial-item-title');
                             tutorialTitleLink.textContent = filename.replace('.html', '');
