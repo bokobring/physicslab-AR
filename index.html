@@ -24,15 +24,15 @@
         }
 
         .header {
-            display: flex; /* 使用 Flexbox 布局 */
-            align-items: center; /* 垂直居中 */
+            display: flex;
+            align-items: center;
             margin-bottom: 20px;
         }
 
         .logo {
-            width: 60px; /* 调整 Logo 大小 */
+            width: 60px;
             height: auto;
-            margin-right: 15px; /* Logo 和标题之间的间距 */
+            margin-right: 15px;
         }
 
         .header-text h1 {
@@ -115,6 +115,8 @@
             border-radius: 12px;
             color: #333;
             line-height: 1.7;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .tutorial-section {
@@ -124,7 +126,6 @@
             border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-
 
         .tutorial-categories {
             display: flex;
@@ -136,70 +137,61 @@
 
         .tutorial-category-button {
             padding: 10px 15px;
-            margin-right: 20px; /* 增加按钮间距 */
-            border: none; /* 移除边框 */
-            border-bottom: 3px solid transparent; /* 底部横线，初始透明 */
-            border-radius: 0; /* 移除圆角 */
-            background-color: transparent; /* 透明背景 */
+            margin-right: 20px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            background-color: transparent;
             color: #555;
             cursor: pointer;
             white-space: nowrap;
-            transition: border-bottom-color 0.3s ease, color 0.3s ease; /* 横线和文字颜色过渡 */
-            font-size: 1.1em; /* 稍微增大字体 */
-            font-weight: bold; /* 加粗字体 */
+            transition: border-bottom-color 0.3s ease, color 0.3s ease;
+            font-size: 1.1em;
+            font-weight: bold;
         }
 
         .tutorial-category-button:hover {
-            color: #333; /* 鼠标悬停文字颜色加深 */
-            border-bottom-color: #ddd; /* 鼠标悬停横线变灰 */
+            color: #333;
+            border-bottom-color: #ddd;
         }
 
         .tutorial-category-button.active {
-            color: #000; /* 激活状态文字颜色黑色 */
-            border-bottom-color: #4285f4; /* 激活状态横线蓝色 */
+            color: #000;
+            border-bottom-color: #4285f4;
         }
 
-        /* 分类颜色 (明亮色系) */
-        .tutorial-category-button:nth-child(1).active { border-bottom-color: #FF5733; /* 橙红色 */ }
-        .tutorial-category-button:nth-child(2).active { border-bottom-color: #33A7FF; /* 亮蓝色 */ }
-        .tutorial-category-button:nth-child(3).active { border-bottom-color: #4CAF50; /* 亮绿色 */ }
-        .tutorial-category-button:nth-child(4).active { border-bottom-color: #FFC107; /* 金黄色 */ }
-        .tutorial-category-button:nth-child(5).active { border-bottom-color: #E91E63; /* 粉红色 */ }
-        /* 可以继续添加更多颜色，或者使用更动态的颜色分配方案 */
-
+        .tutorial-category-button:nth-child(1).active { border-bottom-color: #FF5733; }
+        .tutorial-category-button:nth-child(2).active { border-bottom-color: #33A7FF; }
+        .tutorial-category-button:nth-child(3).active { border-bottom-color: #4CAF50; }
+        .tutorial-category-button:nth-child(4).active { border-bottom-color: #FFC107; }
+        .tutorial-category-button:nth-child(5).active { border-bottom-color: #E91E63; }
 
         .tutorial-list-container {
-            position: relative; /* 为滑动效果定位 */
-            overflow: hidden; /* 隐藏超出容器的内容 */
+            position: relative;
+            overflow: hidden;
         }
 
         .category-tutorials {
-            padding-top: 10px; /* 教程列表顶部内边距 */
-            opacity: 1; /* 初始完全不透明 */
-            transition: opacity 0.5s ease; /* 淡入淡出过渡效果 */
+            padding-top: 10px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
         }
 
         .category-tutorials.hidden {
-            opacity: 0; /* 隐藏状态透明度为0 */
-            pointer-events: none; /* 隐藏状态禁用鼠标事件 */
+            opacity: 0;
+            pointer-events: none;
         }
-
 
         .tutorial-item {
-            padding: 15px;
+            padding: 15px 0;
             margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px dashed #ccc;
             transition: transform 0.3s ease;
-            opacity: 1;
-            transform: translateY(0);
-            animation: none;
         }
 
-        .tutorial-item:hover {
-            transform: translateY(0);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        .tutorial-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .tutorial-item-title {
@@ -207,13 +199,6 @@
             color: #333;
             text-decoration: none;
             display: block;
-        }
-
-        .category-tutorials {
-            max-height: none;
-            overflow: visible;
-            transition: none;
-            opacity: 1;
         }
 
         @keyframes fadeInSlideUp {
@@ -239,7 +224,6 @@
         </header>
 
         <section class="one-click-download-section" id="one-click-download-section">
-            <!-- 一键下载按钮将由 JavaScript 插入 -->
         </section>
 
         <section class="download-section">
@@ -252,19 +236,15 @@
 
         <section class="introduction-section">
             <div class="introduction-box" id="introduction-content">
-                <!-- 介绍文本将由 JavaScript 加载 -->
             </div>
         </section>
 
         <section class="tutorial-section" id="tutorial-section">
             <nav class="tutorial-categories" id="tutorial-categories-nav">
-                <!-- 教程分类将由 JavaScript 加载 -->
             </nav>
             <div class="tutorial-list-container" id="tutorial-list-container">
-                <!-- 教程列表将由 JavaScript 加载 -->
             </div>
         </section>
-
     </div>
 
     <script>
@@ -277,9 +257,8 @@
             const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
             const tutorialListContainer = document.getElementById('tutorial-list-container');
 
-            let currentCategory = null; // 当前激活的分类
+            let currentCategory = null;
 
-            // 加载链接 JSON 文件
             fetch('/link.json')
                 .then(response => response.json())
                 .then(data => {
@@ -312,11 +291,9 @@
                     oneClickDownloadButton.href = downloadLink;
                     oneClickDownloadButton.textContent = buttonText;
                     oneClickDownloadSection.appendChild(oneClickDownloadButton);
-
                 })
                 .catch(error => console.error('Error loading link.json:', error));
 
-            // 加载介绍文本文件
             fetch('/introduction.txt')
                 .then(response => response.text())
                 .then(text => {
@@ -324,8 +301,6 @@
                 })
                 .catch(error => console.error('Error loading introduction.txt:', error));
 
-
-            // 加载 article.txt 文件，并解析教程列表
             fetch('/article.txt')
                 .then(response => response.text())
                 .then(text => {
@@ -335,24 +310,23 @@
                     tutorialCategoriesNav.innerHTML = '';
                     tutorialListContainer.innerHTML = '';
 
-                    // 添加 "全部" 分类按钮 (默认激活)
                     const allCategoryButton = document.createElement('button');
-                    allCategoryButton.classList.add('tutorial-category-button', 'active'); // 默认激活
+                    allCategoryButton.classList.add('tutorial-category-button', 'active');
                     allCategoryButton.textContent = '全部';
                     tutorialCategoriesNav.appendChild(allCategoryButton);
-                    currentCategory = '全部'; // 设置当前激活分类为 "全部"
+                    currentCategory = '全部';
 
                     const allTutorialsDiv = document.createElement('div');
                     allTutorialsDiv.classList.add('category-tutorials');
                     tutorialListContainer.appendChild(allTutorialsDiv);
                     allTutorialsDiv.dataset.category = '全部';
-                    loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv); // 初始加载 "全部" 分类教程
+                    loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv);
 
                     allCategoryButton.addEventListener('click', () => {
-                        setActiveCategory('全部', allCategoryButton); // 激活 "全部" 分类
-                        loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv); // 加载 "全部" 分类教程
+                        if (currentCategory === '全部') return;
+                        setActiveCategory('全部', allCategoryButton);
+                        loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv);
                     });
-
 
                     Object.keys(categories).forEach((categoryName, index) => {
                         const tutorials = categories[categoryName];
@@ -363,41 +337,33 @@
                         tutorialCategoriesNav.appendChild(categoryButton);
 
                         const categoryTutorialsDiv = document.createElement('div');
-                        categoryTutorialsDiv.classList.add('category-tutorials', 'hidden'); // 初始隐藏非 "全部" 分类
+                        categoryTutorialsDiv.classList.add('category-tutorials', 'hidden');
                         tutorialListContainer.appendChild(categoryTutorialsDiv);
                         categoryTutorialsDiv.dataset.category = categoryName;
-                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 加载分类教程，初始隐藏
+                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv);
 
                         categoryButton.addEventListener('click', () => {
-                            setActiveCategory(categoryName, categoryButton); // 激活当前分类
-                            loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 加载当前分类教程
+                            setActiveCategory(categoryName, categoryButton);
+                            loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv);
                         });
                     });
 
-
                     function setActiveCategory(categoryName, clickedButton) {
-                        if (currentCategory === categoryName) return; // 如果已经是当前分类，则不重复操作
-
+                        if (currentCategory === categoryName) return;
                         document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
-                        clickedButton.classList.add('active'); // 激活点击的按钮
-                        currentCategory = categoryName; // 更新当前激活分类
-
+                        clickedButton.classList.add('active');
+                        currentCategory = categoryName;
                         document.querySelectorAll('.category-tutorials').forEach(div => {
-                            div.classList.add('hidden'); // 隐藏所有教程列表
+                            div.classList.add('hidden');
                         });
-
                         const currentCategoryTutorialsDiv = tutorialListContainer.querySelector(`.category-tutorials[data-category="${categoryName}"]`);
                         if (currentCategoryTutorialsDiv) {
-                            currentCategoryTutorialsDiv.classList.remove('hidden'); // 显示当前分类的教程列表
+                            currentCategoryTutorialsDiv.classList.remove('hidden');
                         }
                     }
-
-
                 })
                 .catch(error => console.error('Error loading article.txt:', error));
 
-
-            // 解析 article.txt 文件的函数
             function parseArticleText(text) {
                 const lines = text.trim().split('\n');
                 return lines.map(line => {
@@ -410,7 +376,6 @@
                 });
             }
 
-            // 按分类分组教程的函数
             function groupTutorialsByCategory(tutorialData) {
                 const categories = {};
                 tutorialData.forEach(tutorial => {
@@ -423,20 +388,16 @@
                 return categories;
             }
 
-
-            // 渲染单个分类的教程列表
             function loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv) {
                 categoryTutorialsDiv.innerHTML = '';
-
                 tutorials.forEach((tutorial, index) => {
                     const tutorialItem = document.createElement('div');
                     tutorialItem.classList.add('tutorial-item');
-                    tutorialItem.style.animationDelay = `${index * 0.05 * index}s`; // 稍微调整动画延迟
-                    tutorialItem.style.animationName = 'fadeInSlideUp';
+                    tutorialItem.style.animationDelay = `${index * 0.05 * index}s`;
 
                     const tutorialTitleLink = document.createElement('a');
                     tutorialTitleLink.href = `/${tutorial.filename}`;
-                    tutorialTitleLink.target = '_blank'; // 在新标签页中打开
+                    tutorialTitleLink.target = '_blank';
                     tutorialTitleLink.classList.add('tutorial-item-title');
                     tutorialTitleLink.textContent = tutorial.title;
                     tutorialItem.appendChild(tutorialTitleLink);
