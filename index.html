@@ -304,7 +304,7 @@
 
 
             // 加载 article.txt 文件，并解析教程列表
-            fetch('/article/article.txt')
+            fetch('/article.txt') // 直接从根目录加载 article.txt
                 .then(response => response.text())
                 .then(text => {
                     const tutorialData = parseArticleText(text); // 解析 article.txt 内容
@@ -345,20 +345,20 @@
                 .catch(error => console.error('Error loading article.txt:', error));
 
 
-            // 解析 article.txt 文件的函数
+            // 解析 article.txt 文件的函数 (保持不变)
             function parseArticleText(text) {
-                const lines = text.trim().split('\n'); // 按行分割文本，并去除首尾空白
+                const lines = text.trim().split('\n');
                 return lines.map(line => {
-                    const parts = line.split('|'); // 使用 | 分隔每行内容
+                    const parts = line.split('|');
                     return {
-                        category: parts[0].trim(), // 分类名
-                        title: parts[1].trim(),    // 教程标题
-                        filename: parts[2].trim()  // 文件名
+                        category: parts[0].trim(),
+                        title: parts[1].trim(),
+                        filename: parts[2].trim()
                     };
                 });
             }
 
-            // 按分类分组教程的函数
+            // 按分类分组教程的函数 (保持不变)
             function groupTutorialsByCategory(tutorialData) {
                 const categories = {};
                 tutorialData.forEach(tutorial => {
@@ -372,7 +372,7 @@
             }
 
 
-            // 渲染单个分类的教程列表 (与之前基本相同，但使用 JSON 数据)
+            // 渲染单个分类的教程列表 (修改教程链接，直接使用文件名)
             function loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv) {
                 categoryTutorialsDiv.innerHTML = ''; // 清空之前的教程条目
 
@@ -380,13 +380,13 @@
                     const tutorialItem = document.createElement('div');
                     tutorialItem.classList.add('tutorial-item');
                     tutorialItem.style.animationDelay = `${index * 0.1}s`;
-                    tutorialItem.style.animationName = 'fadeInSlideUp'; // 保留淡入动画
+                    tutorialItem.style.animationName = 'fadeInSlideUp';
 
                     const tutorialTitleLink = document.createElement('a');
-                    tutorialTitleLink.href = `/article/${tutorial.filename}`; // 构建教程链接，直接使用文件名
+                    tutorialTitleLink.href = `/${tutorial.filename}`; // 直接使用文件名，假设教程文件在根目录
                     tutorialTitleLink.target = '_blank';
                     tutorialTitleLink.classList.add('tutorial-item-title');
-                    tutorialTitleLink.textContent = tutorial.title; // 使用 JSON 数据中的 title 作为教程标题
+                    tutorialTitleLink.textContent = tutorial.title;
                     tutorialItem.appendChild(tutorialTitleLink);
 
                     categoryTutorialsDiv.appendChild(tutorialItem);
