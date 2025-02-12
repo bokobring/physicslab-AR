@@ -24,20 +24,15 @@
         }
 
         .header {
-            text-align: center;
+            display: flex; /* Flexbox 布局 */
+            align-items: center; /* 垂直居中 */
             margin-bottom: 20px;
         }
 
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
         .logo {
-            width: 80px;
+            width: 60px; /* 调整 Logo 大小 */
             height: auto;
-            margin-bottom: 10px;
+            margin-right: 15px; /* Logo 和标题间距 */
         }
 
         .header-text h1 {
@@ -141,25 +136,54 @@
 
         .tutorial-category-button {
             padding: 10px 15px;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background-color: #fff;
+            margin-right: 20px; /* 增加按钮间距 */
+            border: none; /* 移除边框 */
+            border-bottom: 3px solid transparent; /* 底部横线，初始透明 */
+            border-radius: 0; /* 移除圆角 */
+            background-color: transparent; /* 透明背景 */
             color: #555;
             cursor: pointer;
             white-space: nowrap;
-            transition: background-color 0.3s ease, color: 0.3s ease;
+            transition: border-bottom-color 0.3s ease, color 0.3s ease; /* 横线和文字颜色过渡 */
+            font-size: 1.1em; /* 稍微增大字体 */
+            font-weight: bold; /* 加粗字体 */
         }
 
-        .tutorial-category-button.active, .tutorial-category-button:hover {
-            background-color: #4285f4;
-            color: white;
-            border-color: #4285f4;
+        .tutorial-category-button:hover {
+            color: #333; /* 鼠标悬停文字颜色加深 */
+            border-bottom-color: #ddd; /* 鼠标悬停横线变灰 */
         }
+
+        .tutorial-category-button.active {
+            color: #000; /* 激活状态文字颜色黑色 */
+            border-bottom-color: #4285f4; /* 激活状态横线蓝色 */
+        }
+
+        /* 分类颜色 (明亮色系) */
+        .tutorial-category-button:nth-child(1).active { border-bottom-color: #FF5733; /* 橙红色 */ }
+        .tutorial-category-button:nth-child(2).active { border-bottom-color: #33A7FF; /* 亮蓝色 */ }
+        .tutorial-category-button:nth-child(3).active { border-bottom-color: #4CAF50; /* 亮绿色 */ }
+        .tutorial-category-button:nth-child(4).active { border-bottom-color: #FFC107; /* 金黄色 */ }
+        .tutorial-category-button:nth-child(5).active { border-bottom-color: #E91E63; /* 粉红色 */ }
+        /* 可以继续添加更多颜色，或者使用更动态的颜色分配方案 */
+
 
         .tutorial-list-container {
-            /* 教程列表容器的样式 */
+            position: relative; /* 为滑动效果定位 */
+            overflow: hidden; /* 隐藏超出容器的内容 */
         }
+
+        .category-tutorials {
+            padding-top: 10px; /* 教程列表顶部内边距 */
+            opacity: 1; /* 初始完全不透明 */
+            transition: opacity 0.5s ease; /* 淡入淡出过渡效果 */
+        }
+
+        .category-tutorials.hidden {
+            opacity: 0; /* 隐藏状态透明度为0 */
+            pointer-events: none; /* 隐藏状态禁用鼠标事件 */
+        }
+
 
         .tutorial-item {
             padding: 15px;
@@ -207,12 +231,10 @@
 <body>
     <div class="container">
         <header class="header">
-            <div class="logo-container">
-                <img src="logo.png" alt="物理实验室Logo" class="logo">
-                <div class="header-text">
-                    <h1>物理实验室官网</h1>
-                    <p class="sub-heading">几乎免费的掌心实验室</p>
-                </div>
+            <img src="logo.png" alt="物理实验室Logo" class="logo">
+            <div class="header-text">
+                <h1>物理实验室官网</h1>
+                <p class="sub-heading">几乎免费的掌心实验室</p>
             </div>
         </header>
 
@@ -256,6 +278,7 @@
             const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
             const tutorialListContainer = document.getElementById('tutorial-list-container');
 
+            let currentCategory = null; // 当前激活的分类
 
             // 加载链接 JSON 文件
             fetch('/link.json')
@@ -304,18 +327,36 @@
 
 
             // 加载 article.txt 文件，并解析教程列表
-            fetch('/article.txt') // 直接从根目录加载 article.txt
+            fetch('/article.txt')
                 .then(response => response.text())
                 .then(text => {
-                    const tutorialData = parseArticleText(text); // 解析 article.txt 内容
+                    const tutorialData = parseArticleText(text);
+                    const categories = groupTutorialsByCategory(tutorialData);
 
-                    tutorialCategoriesNav.innerHTML = ''; // 清空之前的分类按钮
-                    tutorialListContainer.innerHTML = ''; // 清空之前的教程列表
+                    tutorialCategoriesNav.innerHTML = '';
+                    tutorialListContainer.innerHTML = '';
 
-                    const categories = groupTutorialsByCategory(tutorialData); // 按分类分组教程
+                    // 添加 "全部" 分类按钮 (默认激活)
+                    const allCategoryButton = document.createElement('button');
+                    allCategoryButton.classList.add('tutorial-category-button', 'active'); // 默认激活
+                    allCategoryButton.textContent = '全部';
+                    tutorialCategoriesNav.appendChild(allCategoryButton);
+                    currentCategory = '全部'; // 设置当前激活分类为 "全部"
 
-                    Object.keys(categories).forEach(categoryName => {
-                        const tutorials = categories[categoryName]; // 获取分类下的教程列表
+                    const allTutorialsDiv = document.createElement('div');
+                    allTutorialsDiv.classList.add('category-tutorials');
+                    tutorialListContainer.appendChild(allTutorialsDiv);
+                    allTutorialsDiv.dataset.category = '全部';
+                    loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv); // 初始加载 "全部" 分类教程
+
+                    allCategoryButton.addEventListener('click', () => {
+                        setActiveCategory('全部', allCategoryButton); // 激活 "全部" 分类
+                        loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv); // 加载 "全部" 分类教程
+                    });
+
+
+                    Object.keys(categories).forEach((categoryName, index) => {
+                        const tutorials = categories[categoryName];
 
                         const categoryButton = document.createElement('button');
                         categoryButton.classList.add('tutorial-category-button');
@@ -323,24 +364,36 @@
                         tutorialCategoriesNav.appendChild(categoryButton);
 
                         const categoryTutorialsDiv = document.createElement('div');
-                        categoryTutorialsDiv.classList.add('category-tutorials');
+                        categoryTutorialsDiv.classList.add('category-tutorials', 'hidden'); // 初始隐藏非 "全部" 分类
                         tutorialListContainer.appendChild(categoryTutorialsDiv);
                         categoryTutorialsDiv.dataset.category = categoryName;
-
-                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 渲染教程列表
+                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 加载分类教程，初始隐藏
 
                         categoryButton.addEventListener('click', () => {
-                            document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
-                            categoryButton.classList.add('active');
-
-                            document.querySelectorAll('.category-tutorials').forEach(div => {
-                                if (div !== categoryTutorialsDiv) {
-                                    div.classList.remove('expanded');
-                                }
-                            });
-                            categoryTutorialsDiv.classList.toggle('expanded');
+                            setActiveCategory(categoryName, categoryButton); // 激活当前分类
+                            loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 加载当前分类教程
                         });
                     });
+
+
+                    function setActiveCategory(categoryName, clickedButton) {
+                        if (currentCategory === categoryName) return; // 如果已经是当前分类，则不重复操作
+
+                        document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
+                        clickedButton.classList.add('active'); // 激活点击的按钮
+                        currentCategory = categoryName; // 更新当前激活分类
+
+                        document.querySelectorAll('.category-tutorials').forEach(div => {
+                            div.classList.add('hidden'); // 隐藏所有教程列表
+                        });
+
+                        const currentCategoryTutorialsDiv = tutorialListContainer.querySelector(`.category-tutorials[data-category="${categoryName}"]`);
+                        if (currentCategoryTutorialsDiv) {
+                            currentCategoryTutorialsDiv.classList.remove('hidden'); // 显示当前分类的教程列表
+                        }
+                    }
+
+
                 })
                 .catch(error => console.error('Error loading article.txt:', error));
 
@@ -372,18 +425,18 @@
             }
 
 
-            // 渲染单个分类的教程列表 (修改教程链接，直接使用文件名)
+            // 渲染单个分类的教程列表 (保持不变)
             function loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv) {
-                categoryTutorialsDiv.innerHTML = ''; // 清空之前的教程条目
+                categoryTutorialsDiv.innerHTML = '';
 
                 tutorials.forEach((tutorial, index) => {
                     const tutorialItem = document.createElement('div');
                     tutorialItem.classList.add('tutorial-item');
-                    tutorialItem.style.animationDelay = `${index * 0.1}s`;
+                    tutorialItem.style.animationDelay = `${index * 0.05 * index}s`; // 稍微调整动画延迟
                     tutorialItem.style.animationName = 'fadeInSlideUp';
 
                     const tutorialTitleLink = document.createElement('a');
-                    tutorialTitleLink.href = `/${tutorial.filename}`; // 直接使用文件名，假设教程文件在根目录
+                    tutorialTitleLink.href = `/${tutorial.filename}`;
                     tutorialTitleLink.target = '_blank';
                     tutorialTitleLink.classList.add('tutorial-item-title');
                     tutorialTitleLink.textContent = tutorial.title;
