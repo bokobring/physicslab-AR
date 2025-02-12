@@ -53,6 +53,28 @@
             margin-top: 5px;
         }
 
+        /* 一键下载按钮样式 */
+        .one-click-download-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .one-click-download-button {
+            display: inline-block;
+            padding: 18px 40px; /* 更大的按钮 */
+            background-color: #4CAF50; /* 绿色，更醒目 */
+            color: white;
+            text-decoration: none;
+            border-radius: 10px; /* 更圆润 */
+            font-size: 1.2em; /* 字体也稍微大一点 */
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .one-click-download-button:hover {
+            background-color: #43A047; /* 悬停时颜色略微加深 */
+        }
+
         /* 下载区域样式 */
         .download-section {
             padding: 20px;
@@ -222,6 +244,10 @@
             </div>
         </header>
 
+        <section class="one-click-download-section" id="one-click-download-section">
+            <!-- One-Click Download button will be inserted here by JavaScript -->
+        </section>
+
         <section class="download-section">
             <div class="download-buttons">
                 <a href="#" id="ios-download" class="download-button">iOS 下载</a>
@@ -260,6 +286,8 @@
             const negativeLayer = document.getElementById('negative-layer');
             const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
             const tutorialListContainer = document.getElementById('tutorial-list-container');
+            const oneClickDownloadSection = document.getElementById('one-click-download-section'); // 获取一键下载区域
+
             let negativeLayerActive = false; // 负一层状态
 
             // 加载链接 JSON 文件
@@ -269,6 +297,35 @@
                     iosDownloadLink.href = data.ios || '#'; // 默认 #，如果 JSON 中没有
                     androidDownloadLink.href = data.android || '#';
                     windowsDownloadLink.href = data.windows || '#';
+
+                    // 创建 "一键下载" 按钮
+                    const oneClickDownloadButton = document.createElement('a');
+                    oneClickDownloadButton.classList.add('one-click-download-button');
+                    oneClickDownloadButton.textContent = '一键下载'; // 默认文本，稍后根据系统更新
+                    oneClickDownloadButton.href = '#'; // 默认链接
+
+                    // 检测用户操作系统并设置链接
+                    const userAgent = navigator.userAgent.toLowerCase();
+                    let downloadLink = '#'; // 默认链接
+                    let buttonText = '一键下载';
+
+                    if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+                        downloadLink = data.ios || '#';
+                        buttonText = 'iOS 一键下载';
+                    } else if (userAgent.includes('android')) {
+                        downloadLink = data.android || '#';
+                        buttonText = 'Android 一键下载';
+                    } else if (userAgent.includes('windows')) {
+                        downloadLink = data.windows || '#';
+                        buttonText = 'Windows 一键下载';
+                    } else {
+                        buttonText = '立即下载 (请选择版本)'; // 如果无法识别或非主流系统
+                    }
+
+                    oneClickDownloadButton.href = downloadLink;
+                    oneClickDownloadButton.textContent = buttonText;
+                    oneClickDownloadSection.appendChild(oneClickDownloadButton); // 添加到页面
+
                 })
                 .catch(error => console.error('Error loading link.json:', error));
 
