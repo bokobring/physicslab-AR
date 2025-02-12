@@ -12,7 +12,7 @@
             background-color: #f4f7f9;
             color: #333;
             overflow-x: hidden;
-            scroll-behavior: smooth; /* 启用平滑滚动，虽然现在负层动画没了，但页面内部滚动可能需要 */
+            scroll-behavior: smooth;
         }
 
         .container {
@@ -122,13 +122,12 @@
             line-height: 1.7;
         }
 
-        /* 教程部分样式 (直接显示在页面下方，不再是负层) */
         .tutorial-section {
-            padding: 20px; /* 与其他 section 保持一致的 padding */
-            margin-bottom: 30px; /* 与页面底部隔开 */
-            background-color: #fff; /* 可选：教程区域背景色 */
-            border-radius: 12px; /* 可选：教程区域圆角 */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 可选：教程区域阴影 */
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
 
@@ -169,9 +168,9 @@
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
-            opacity: 1; /* 始终可见 */
-            transform: translateY(0); /* 移除位移 */
-            animation: none; /* 移除动画 */
+            opacity: 1;
+            transform: translateY(0);
+            animation: none;
         }
 
         .tutorial-item:hover {
@@ -187,13 +186,12 @@
         }
 
         .category-tutorials {
-            max-height: none; /* 始终展开 */
-            overflow: visible; /* 内容可见 */
-            transition: none; /* 移除过渡效果 */
-            opacity: 1; /* 始终不透明 */
+            max-height: none;
+            overflow: visible;
+            transition: none;
+            opacity: 1;
         }
 
-        /* 移除动画关键帧 */
         @keyframes fadeInSlideUp {
             from {
                 opacity: 0;
@@ -236,17 +234,15 @@
             </div>
         </section>
 
-        <!-- 教程部分直接放在这里，不再是负层 -->
+        <!-- 教程部分直接放在这里 -->
         <section class="tutorial-section" id="tutorial-section">
             <nav class="tutorial-categories" id="tutorial-categories-nav">
                 <!-- Tutorial categories will be loaded here by JavaScript -->
             </nav>
             <div class="tutorial-list-container" id="tutorial-list-container">
-                <!-- Tutorial lists for each category will be loaded here by JavaScript -->
+                <!-- Tutorial lists will be loaded here by JavaScript -->
             </div>
         </section>
-
-        <!-- 移除 footer 和 scroll-indicator -->
 
     </div>
 
@@ -257,17 +253,12 @@
             const windowsDownloadLink = document.getElementById('windows-download');
             const introductionContentDiv = document.getElementById('introduction-content');
             const oneClickDownloadSection = document.getElementById('one-click-download-section');
-            const tutorialSection = document.getElementById('tutorial-section'); // 获取教程 section，虽然现在用不到了，但保留以防未来需要
-
-            // 移除负层相关的元素和变量
-            const negativeLayer = document.getElementById('negative-layer'); // 尝试获取，虽然HTML中已经删除了
-            if (negativeLayer) negativeLayer.remove(); // 如果存在，就移除
-            const scrollIndicator = document.querySelector('.scroll-indicator'); // 尝试获取，虽然HTML中已经删除了
-            if (scrollIndicator) scrollIndicator.remove(); // 如果存在，就移除
+            const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
+            const tutorialListContainer = document.getElementById('tutorial-list-container');
 
 
             // 加载链接 JSON 文件
-            fetch('/link.json') // 绝对路径
+            fetch('/link.json')
                 .then(response => response.json())
                 .then(data => {
                     iosDownloadLink.href = data.ios || '#';
@@ -304,7 +295,7 @@
                 .catch(error => console.error('Error loading link.json:', error));
 
             // 加载介绍文本文件
-            fetch('/introduction.txt') // 绝对路径
+            fetch('/introduction.txt')
                 .then(response => response.text())
                 .then(text => {
                     introductionContentDiv.textContent = text;
@@ -312,33 +303,20 @@
                 .catch(error => console.error('Error loading introduction.txt:', error));
 
 
-            // 加载教程分类和列表 (修复后的错误处理和中文路径处理)
-            fetch('/article/') // 绝对路径
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('HTTP error loading article directory:', response.status, response.statusText);
-                        throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    console.log('Article Directory HTML:', html);
+            // 加载 article.txt 文件，并解析教程列表
+            fetch('/article/article.txt')
+                .then(response => response.text())
+                .then(text => {
+                    const tutorialData = parseArticleText(text); // 解析 article.txt 内容
 
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const categoryFolders = Array.from(doc.querySelectorAll('a[href^="/article/"]')) // 绝对路径选择器
-                        .map(link => link.getAttribute('href').replace('/article/', '').replace(/\/$/, '')) // 绝对路径替换
-                        .filter(folder => folder && folder !== '..' && folder !== '.');
+                    tutorialCategoriesNav.innerHTML = ''; // 清空之前的分类按钮
+                    tutorialListContainer.innerHTML = ''; // 清空之前的教程列表
 
-                    console.log('Category Folders:', categoryFolders);
+                    const categories = groupTutorialsByCategory(tutorialData); // 按分类分组教程
 
-                    const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
-                    const tutorialListContainer = document.getElementById('tutorial-list-container');
+                    Object.keys(categories).forEach(categoryName => {
+                        const tutorials = categories[categoryName]; // 获取分类下的教程列表
 
-                    tutorialCategoriesNav.innerHTML = '';
-                    tutorialListContainer.innerHTML = '';
-
-                    categoryFolders.forEach(categoryName => {
                         const categoryButton = document.createElement('button');
                         categoryButton.classList.add('tutorial-category-button');
                         categoryButton.textContent = categoryName;
@@ -349,7 +327,7 @@
                         tutorialListContainer.appendChild(categoryTutorialsDiv);
                         categoryTutorialsDiv.dataset.category = categoryName;
 
-                        loadTutorialsForCategory(categoryName, categoryTutorialsDiv);
+                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 渲染教程列表
 
                         categoryButton.addEventListener('click', () => {
                             document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
@@ -364,49 +342,55 @@
                         });
                     });
                 })
-                .catch(error => {
-                    console.error('Error loading article directory:', error.message, error.stack);
+                .catch(error => console.error('Error loading article.txt:', error));
+
+
+            // 解析 article.txt 文件的函数
+            function parseArticleText(text) {
+                const lines = text.trim().split('\n'); // 按行分割文本，并去除首尾空白
+                return lines.map(line => {
+                    const parts = line.split('|'); // 使用 | 分隔每行内容
+                    return {
+                        category: parts[0].trim(), // 分类名
+                        title: parts[1].trim(),    // 教程标题
+                        filename: parts[2].trim()  // 文件名
+                    };
                 });
+            }
+
+            // 按分类分组教程的函数
+            function groupTutorialsByCategory(tutorialData) {
+                const categories = {};
+                tutorialData.forEach(tutorial => {
+                    const categoryName = tutorial.category;
+                    if (!categories[categoryName]) {
+                        categories[categoryName] = [];
+                    }
+                    categories[categoryName].push(tutorial);
+                });
+                return categories;
+            }
 
 
-            function loadTutorialsForCategory(categoryName, categoryTutorialsDiv) {
-                const encodedCategoryName = encodeURIComponent(categoryName);
-                fetch(`/article/${encodedCategoryName}/`) // 绝对路径
-                    .then(response => {
-                        if (!response.ok) {
-                            console.error('HTTP error loading tutorials for category:', categoryName, response.status, response.statusText);
-                            throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText} for category: ${categoryName}`);
-                        }
-                        return response.text();
-                    })
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const tutorialLinks = Array.from(doc.querySelectorAll('a[href$=".html"]'))
-                            .map(link => link.getAttribute('href'))
-                            .filter(filename => !filename.startsWith('__'));
+            // 渲染单个分类的教程列表 (与之前基本相同，但使用 JSON 数据)
+            function loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv) {
+                categoryTutorialsDiv.innerHTML = ''; // 清空之前的教程条目
 
-                        categoryTutorialsDiv.innerHTML = '';
+                tutorials.forEach((tutorial, index) => {
+                    const tutorialItem = document.createElement('div');
+                    tutorialItem.classList.add('tutorial-item');
+                    tutorialItem.style.animationDelay = `${index * 0.1}s`;
+                    tutorialItem.style.animationName = 'fadeInSlideUp'; // 保留淡入动画
 
-                        tutorialLinks.forEach((filename, index) => {
-                            const tutorialItem = document.createElement('div');
-                            tutorialItem.classList.add('tutorial-item');
-                            tutorialItem.style.animationDelay = `${index * 0.1}s`;
-                            tutorialItem.style.animationName = 'fadeInSlideUp'; // 保留淡入动画，但移除上滑位移动画
+                    const tutorialTitleLink = document.createElement('a');
+                    tutorialTitleLink.href = `/article/${tutorial.filename}`; // 构建教程链接，直接使用文件名
+                    tutorialTitleLink.target = '_blank';
+                    tutorialTitleLink.classList.add('tutorial-item-title');
+                    tutorialTitleLink.textContent = tutorial.title; // 使用 JSON 数据中的 title 作为教程标题
+                    tutorialItem.appendChild(tutorialTitleLink);
 
-                            const tutorialTitleLink = document.createElement('a');
-                            tutorialTitleLink.href = `/article/${encodedCategoryName}/${filename}`; // 绝对路径
-                            tutorialTitleLink.target = '_blank';
-                            tutorialTitleLink.classList.add('tutorial-item-title');
-                            tutorialTitleLink.textContent = filename.replace('.html', '');
-                            tutorialItem.appendChild(tutorialTitleLink);
-
-                            categoryTutorialsDiv.appendChild(tutorialItem);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error loading tutorials for category:', categoryName, error.message, error.stack);
-                    });
+                    categoryTutorialsDiv.appendChild(tutorialItem);
+                });
             }
         });
     </script>
