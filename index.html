@@ -27,14 +27,12 @@
             display: flex;
             align-items: center;
             margin-bottom: 20px;
-            text-align: center; /* 居中 header 内容 */
-            flex-direction: column; /* 垂直排列 logo 和 text */
         }
 
         .logo {
             width: 60px;
             height: auto;
-            margin-bottom: 10px; /* Logo 与标题间距 */
+            margin-right: 15px;
         }
 
         .header-text h1 {
@@ -109,8 +107,8 @@
         .introduction-section {
             text-align: left;
             margin-bottom: 30px;
-            max-width: 800px; /* 限制最大宽度 */
-            margin-left: auto;  /* 水平居中 */
+            max-width: 800px; /* 添加最大宽度 */
+            margin-left: auto;
             margin-right: auto;
         }
 
@@ -164,7 +162,7 @@
             border-bottom-color: #4285f4;
         }
 
-        /* 分类颜色 */
+        /* 分类颜色 (明亮色系) */
         .tutorial-category-button:nth-child(1).active { border-bottom-color: #FF5733; }
         .tutorial-category-button:nth-child(2).active { border-bottom-color: #33A7FF; }
         .tutorial-category-button:nth-child(3).active { border-bottom-color: #4CAF50; }
@@ -174,31 +172,31 @@
 
         .tutorial-list-container {
             position: relative;
-            overflow-x: hidden; /* 水平方向隐藏溢出内容 */
-            overflow-y: visible; /* 垂直方向显示 */
-            width: 100%; /* 容器宽度 */
+            overflow: hidden;
         }
 
         .category-tutorials {
             padding-top: 10px;
-            opacity: 0; /* 初始透明度为0，等待动画显示 */
-            transition: opacity 0.5s ease, transform 0.5s ease; /* 淡入淡出和位移过渡 */
-            position: absolute; /* 绝对定位，实现滑动效果 */
-            top: 0;
-            left: 0;
-            width: 100%; /* 宽度撑满容器 */
-        }
-
-        .category-tutorials.active {
-            opacity: 1; /* 激活状态完全显示 */
-            transform: translateX(0); /* 激活状态不位移 */
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease; /* 添加 transform 过渡 */
+            transform: translateX(0); /* 初始位置 */
         }
 
         .category-tutorials.hidden {
-            opacity: 0; /* 隐藏状态透明度为0 */
-            transform: translateX(100%); /* 隐藏状态向右位移，超出屏幕 */
-            pointer-events: none; /* 隐藏状态禁用鼠标事件 */
+            opacity: 0;
+            pointer-events: none;
         }
+
+        /* 滑动动画关键帧 (未使用，淡入淡出效果更简单) */
+        /* @keyframes slideInLeft {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        } */
 
 
         .tutorial-item {
@@ -211,12 +209,12 @@
             opacity: 1;
             transform: translateY(0);
             animation: none;
-            border-bottom: 1px dashed #ccc; /* 灰色虚线分隔线 */
+            border-bottom: 1px dashed #ccc; /* 添加灰色虚线 */
         }
 
-        .tutorial-item:last-child {
-            border-bottom: none; /* 最后一个教程项移除底部分隔线 */
-            margin-bottom: 0; /* 最后一个教程项移除底部外边距 */
+        /* 移除最后一个教程条目的虚线 */
+        .category-tutorials:not(.hidden) .tutorial-item:last-child {
+            border-bottom: none;
         }
 
 
@@ -300,9 +298,8 @@
             const oneClickDownloadSection = document.getElementById('one-click-download-section');
             const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
             const tutorialListContainer = document.getElementById('tutorial-list-container');
-            const tutorialSection = document.getElementById('tutorial-section'); // 获取教程 section
 
-            let currentCategory = null; // 当前激活的分类
+            let currentCategory = null;
 
             // 加载链接 JSON 文件
             fetch('/link.json')
@@ -368,16 +365,10 @@
                     currentCategory = '全部';
 
                     const allTutorialsDiv = document.createElement('div');
-                    allTutorialsDiv.classList.add('category-tutorials', 'active'); // 初始显示 "全部" 分类
+                    allTutorialsDiv.classList.add('category-tutorials');
                     tutorialListContainer.appendChild(allTutorialsDiv);
                     allTutorialsDiv.dataset.category = '全部';
                     loadTutorialsForCategory('全部', tutorialData, allTutorialsDiv);
-
-
-                    allCategoryButton.addEventListener('click', () => {
-                        setActiveCategory('全部', allCategoryButton); // 激活 "全部" 分类
-                        showCategoryTutorials('全部', tutorialData, allTutorialsDiv); // 显示 "全部" 分类
-                    });
 
 
                     Object.keys(categories).forEach((categoryName, index) => {
@@ -389,40 +380,33 @@
                         tutorialCategoriesNav.appendChild(categoryButton);
 
                         const categoryTutorialsDiv = document.createElement('div');
-                        categoryTutorialsDiv.classList.add('category-tutorials', 'hidden'); // 初始隐藏
+                        categoryTutorialsDiv.classList.add('category-tutorials', 'hidden');
                         tutorialListContainer.appendChild(categoryTutorialsDiv);
                         categoryTutorialsDiv.dataset.category = categoryName;
-                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv); // 加载分类教程，初始隐藏
-
+                        loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv);
 
                         categoryButton.addEventListener('click', () => {
-                            setActiveCategory(categoryName, categoryButton); // 激活分类按钮
-                            showCategoryTutorials(categoryName, tutorials, categoryTutorialsDiv); // 显示当前分类
+                            setActiveCategory(categoryName, categoryButton);
+                            loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv);
                         });
                     });
 
-                    function showCategoryTutorials(categoryName, tutorials, categoryTutorialsDiv) {
-                        if (currentCategory === categoryName) return; // 如果已经是当前分类，则不重复操作
+
+                    function setActiveCategory(categoryName, clickedButton) {
+                        if (currentCategory === categoryName) return;
+
+                        document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
+                        clickedButton.classList.add('active');
+                        currentCategory = categoryName;
 
                         document.querySelectorAll('.category-tutorials').forEach(div => {
-                            div.classList.remove('active'); // 隐藏所有教程列表 (淡出)
-                            div.classList.add('hidden'); // 准备隐藏状态，用于下次显示动画
+                            div.classList.add('hidden');
                         });
 
                         const currentCategoryTutorialsDiv = tutorialListContainer.querySelector(`.category-tutorials[data-category="${categoryName}"]`);
                         if (currentCategoryTutorialsDiv) {
-                             setTimeout(() => { // 延迟显示，等待隐藏动画完成
-                                currentCategoryTutorialsDiv.classList.remove('hidden'); // 移除 hidden class
-                                currentCategoryTutorialsDiv.classList.add('active'); // 显示当前分类 (淡入)
-                            }, 10); // 延迟 10ms，确保动画效果
+                            currentCategoryTutorialsDiv.classList.remove('hidden');
                         }
-                    }
-
-
-                    function setActiveCategory(categoryName, clickedButton) {
-                        document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
-                        clickedButton.classList.add('active');
-                        currentCategory = categoryName;
                     }
 
 
@@ -430,7 +414,6 @@
                 .catch(error => console.error('Error loading article.txt:', error));
 
 
-            // 解析 article.txt 文件的函数 (保持不变)
             function parseArticleText(text) {
                 const lines = text.trim().split('\n');
                 return lines.map(line => {
@@ -443,7 +426,6 @@
                 });
             }
 
-            // 按分类分组教程的函数 (保持不变)
             function groupTutorialsByCategory(tutorialData) {
                 const categories = {};
                 tutorialData.forEach(tutorial => {
@@ -457,7 +439,6 @@
             }
 
 
-            // 渲染单个分类的教程列表 (保持不变)
             function loadTutorialsForCategory(categoryName, tutorials, categoryTutorialsDiv) {
                 categoryTutorialsDiv.innerHTML = '';
 
