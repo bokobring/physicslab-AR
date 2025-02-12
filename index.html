@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理实验室官网</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9; /* 淡雅背景色 */
+            color: #333; /* 主要文字颜色 */
+            overflow-x: hidden; /* 防止横向滚动条 */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-y: auto; /* 允许纵向滚动 */
+            scroll-behavior: smooth; /* 平滑滚动 */
+            position: relative; /* 为负一层定位 */
+        }
+
+        /* 头部样式 */
+        .header {
+            padding: 20px;
+            text-align: left; /* Logo和标题左对齐 */
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center; /* 垂直居中 */
+        }
+
+        .logo {
+            width: 60px; /* Logo 稍微大一点 */
+            height: auto;
+            margin-right: 15px;
+        }
+
+        .header-text h1 {
+            color: #4285f4; /* 优雅的蓝色 */
+            font-size: 2.2em;
+            margin: 0;
+            font-weight: bold; /* 加粗标题 */
+        }
+
+        .header-text p {
+            color: #777; /* 小字颜色 */
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* 下载区域样式 */
+        .download-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* 按钮间距 */
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #4285f4; /* 蓝色按钮背景 */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease; /* 悬停动画 */
+        }
+
+        .download-button:hover {
+            background-color: #357ae8; /* 悬停时颜色略微加深 */
+        }
+
+        /* 介绍区域样式 */
+        .introduction-section {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .introduction-box {
+            background-color: rgba(66, 133, 244, 0.15); /* 半透明蓝色背景 */
+            padding: 25px;
+            border-radius: 12px;
+            color: #333; /* 优雅黑色字体 */
+            line-height: 1.6;
+        }
+
+        /* 底部指示器样式 */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .scroll-indicator {
+            cursor: pointer; /* 指示可点击/滑动 */
+        }
+
+        /* 负一层样式 */
+        .negative-layer {
+            position: fixed; /* 固定定位，实现负一层效果 */
+            top: 100vh; /* 初始位置在视口下方 */
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #fff; /* 负一层背景色 */
+            overflow-y: auto; /* 允许负一层内部滚动 */
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1); /* 顶部阴影 */
+            z-index: 10; /* 确保在内容上方 */
+            transition: transform 0.5s cubic-bezier(0.2, 0.6, 0.3, 1); /* 平滑过渡动画 */
+            transform: translateY(0); /* 初始不位移 */
+        }
+
+        .negative-layer.active {
+            transform: translateY(-100vh); /* 上滑时向上位移一个视口高度 */
+        }
+
+        /* 教程分类导航样式 */
+        .tutorial-categories {
+            display: flex;
+            overflow-x: auto; /* 水平滚动分类 */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tutorial-category-button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background-color: #fff;
+            color: #555;
+            cursor: pointer;
+            white-space: nowrap; /* 防止分类名称换行 */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .tutorial-category-button.active, .tutorial-category-button:hover {
+            background-color: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+
+        /* 教程列表容器样式 */
+        .tutorial-list-container {
+            /* 教程列表容器的样式 */
+        }
+
+        /* 单个教程条目样式 */
+        .tutorial-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            opacity: 0; /* 初始透明度为0，等待动画 */
+            transform: translateY(20px); /* 初始位置略微向下偏移，等待动画 */
+            animation-fill-mode: forwards; /* 动画结束后保持最终状态 */
+            animation-duration: 0.5s; /* 动画时长 */
+            animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1); /* 缓动函数 */
+        }
+
+        .tutorial-item:hover {
+            transform: translateY(0); /* 悬停时轻微上移 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tutorial-item-title {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none; /* 去除超链接默认下划线 */
+            display: block; /* 使标题占据整行，方便点击 */
+        }
+
+        /* 分类展开动画 */
+        .category-tutorials {
+            max-height: 0; /* 初始高度为0，隐藏 */
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.2, 0.6, 0.3, 1), opacity 0.5s ease; /* 高度和透明度动画 */
+            opacity: 0; /* 初始透明度为0 */
+        }
+
+        .category-tutorials.expanded {
+            max-height: 1000px; /* 展开时设置一个足够大的高度，让内容撑开 (实际高度会根据内容动态变化) */
+            opacity: 1; /* 展开时完全不透明 */
+        }
+
+        /* 教程条目展开动画 */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="logo.png" alt="物理实验室Logo" class="logo">
+                <div class="header-text">
+                    <h1>物理实验室官网</h1>
+                    <p class="sub-heading">几乎免费的掌心实验室</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="download-section">
+            <div class="download-buttons">
+                <a href="#" id="ios-download" class="download-button">iOS 下载</a>
+                <a href="#" id="android-download" class="download-button">Android 下载</a>
+                <a href="#" id="windows-download" class="download-button">Windows (64位) 下载</a>
+            </div>
+        </section>
+
+        <section class="introduction-section">
+            <div class="introduction-box" id="introduction-content">
+                <!-- Introduction text will be loaded here by JavaScript -->
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="scroll-indicator">上滑查看教程 ↑</div>
+        </footer>
+
+        <div class="negative-layer" id="negative-layer">
+            <nav class="tutorial-categories" id="tutorial-categories-nav">
+                <!-- Tutorial categories will be loaded here by JavaScript -->
+            </nav>
+            <div class="tutorial-list-container" id="tutorial-list-container">
+                <!-- Tutorial lists for each category will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const iosDownloadLink = document.getElementById('ios-download');
+            const androidDownloadLink = document.getElementById('android-download');
+            const windowsDownloadLink = document.getElementById('windows-download');
+            const introductionContentDiv = document.getElementById('introduction-content');
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            const negativeLayer = document.getElementById('negative-layer');
+            const tutorialCategoriesNav = document.getElementById('tutorial-categories-nav');
+            const tutorialListContainer = document.getElementById('tutorial-list-container');
+            let negativeLayerActive = false; // 负一层状态
+
+            // 加载链接 JSON 文件
+            fetch('link.json')
+                .then(response => response.json())
+                .then(data => {
+                    iosDownloadLink.href = data.ios || '#'; // 默认 #，如果 JSON 中没有
+                    androidDownloadLink.href = data.android || '#';
+                    windowsDownloadLink.href = data.windows || '#';
+                })
+                .catch(error => console.error('Error loading link.json:', error));
+
+            // 加载介绍文本文件
+            fetch('introduction.txt')
+                .then(response => response.text())
+                .then(text => {
+                    introductionContentDiv.textContent = text;
+                })
+                .catch(error => console.error('Error loading introduction.txt:', error));
+
+            // 滚动到负一层事件
+            scrollIndicator.addEventListener('click', () => {
+                negativeLayer.classList.add('active');
+                negativeLayerActive = true;
+            });
+
+            // 监听容器的滚动事件，判断是否需要激活负一层 (模拟支付宝负一层上滑效果)
+            document.querySelector('.container').addEventListener('scroll', (event) => {
+                if (!negativeLayerActive && document.querySelector('.container').scrollTop > (document.querySelector('.container').scrollHeight - document.querySelector('.container').clientHeight - 50)) { // 滚动到底部一定距离后
+                    negativeLayer.classList.add('active');
+                    negativeLayerActive = true;
+                } else if (negativeLayerActive && document.querySelector('.container').scrollTop <= 50) { // 向上滚动到顶部一定距离后收回负一层
+                    negativeLayer.classList.remove('active');
+                    negativeLayerActive = false;
+                }
+            });
+
+            // 加载教程分类和列表
+            fetch('article/') // 假设 article 文件夹在根目录下
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const categoryFolders = Array.from(doc.querySelectorAll('a[href^="article/"]')) // 获取 article 目录下的链接
+                        .map(link => link.getAttribute('href').replace('article/', '').replace(/\/$/, '')) // 提取文件夹名称
+                        .filter(folder => folder && folder !== '..' && folder !== '.'); // 过滤掉无效链接和父目录
+
+                    // 创建分类按钮
+                    categoryFolders.forEach(categoryName => {
+                        const categoryButton = document.createElement('button');
+                        categoryButton.classList.add('tutorial-category-button');
+                        categoryButton.textContent = categoryName;
+                        tutorialCategoriesNav.appendChild(categoryButton);
+
+                        // 创建教程列表容器
+                        const categoryTutorialsDiv = document.createElement('div');
+                        categoryTutorialsDiv.classList.add('category-tutorials');
+                        tutorialListContainer.appendChild(categoryTutorialsDiv);
+                        categoryTutorialsDiv.dataset.category = categoryName; // 存储分类名
+
+                        // 加载教程列表 (初始隐藏)
+                        loadTutorialsForCategory(categoryName, categoryTutorialsDiv);
+
+                        // 分类按钮点击事件
+                        categoryButton.addEventListener('click', () => {
+                            // 切换激活状态
+                            document.querySelectorAll('.tutorial-category-button').forEach(btn => btn.classList.remove('active'));
+                            categoryButton.classList.add('active');
+
+                            // 展开/收起教程列表
+                            document.querySelectorAll('.category-tutorials').forEach(div => {
+                                if (div !== categoryTutorialsDiv) {
+                                    div.classList.remove('expanded'); // 收起其他分类
+                                }
+                            });
+                            categoryTutorialsDiv.classList.toggle('expanded');
+                        });
+                    });
+                })
+                .catch(error => console.error('Error loading article directory:', error));
+
+            // 加载单个分类的教程列表
+            function loadTutorialsForCategory(categoryName, categoryTutorialsDiv) {
+                fetch(`article/${categoryName}/`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const tutorialLinks = Array.from(doc.querySelectorAll('a[href$=".html"]')) // 获取 HTML 文件链接
+                            .map(link => link.getAttribute('href'))
+                            .filter(filename => !filename.startsWith('__')); // 排除内部 HTML
+
+                        tutorialLinks.forEach((filename, index) => {
+                            const tutorialItem = document.createElement('div');
+                            tutorialItem.classList.add('tutorial-item');
+                            tutorialItem.style.animationDelay = `${index * 0.1}s`; // 延迟动画，错落出现
+                            tutorialItem.style.animationName = 'fadeInSlideUp'; // 应用动画
+
+                            const tutorialTitleLink = document.createElement('a');
+                            tutorialTitleLink.href = `article/${categoryName}/${filename}`;
+                            tutorialTitleLink.target = '_blank'; // 新窗口打开
+                            tutorialTitleLink.classList.add('tutorial-item-title');
+                            tutorialTitleLink.textContent = filename.replace('.html', ''); // 文件名作为标题
+                            tutorialItem.appendChild(tutorialTitleLink);
+
+                            categoryTutorialsDiv.appendChild(tutorialItem);
+                        });
+                    })
+                    .catch(error => console.error(`Error loading tutorials for category ${categoryName}:`, error));
+            }
+        });
+    </script>
+</body>
+</html>
